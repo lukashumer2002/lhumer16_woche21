@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import java.io.BufferedReader;
@@ -32,12 +33,19 @@ public class MainActivity extends AppCompatActivity {
     List<Entry> list;
     Spinner s1;
     Spinner s2;
+    ListView listView;
+    String[] arr2;
+    ArrayAdapter ad2;
+    List<String> lastChosen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         okay = findViewById(R.id.buttonOk);
+        lastChosen = new ArrayList<>();
+        lastChosen.add("Fußball");lastChosen.add("Party");
+        listView = findViewById(R.id.ListView);
         a = (EditText) findViewById(R.id.editDate);
         b =(EditText)findViewById(R.id.betrag);
         c = findViewById(R.id.editTextdescription);
@@ -47,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
         String[] arr = new String[]{"Einnahmen","Ausgaben"};
         ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1,arr);
         s1.setAdapter(ad);
-        String[] arr2 = new String[]{"Party", "Fußball"};
-        ArrayAdapter ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
+        arr2 = new String[]{"Party", "Fußball"};
+        ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
         s2.setAdapter(ad2);
     }
 
@@ -57,22 +65,35 @@ public class MainActivity extends AppCompatActivity {
        double betrag = Double.valueOf(b.toString());
        String date = a.getText().toString();
        String kategorie = c.getText().toString();
+       lastChosen.add(kategorie);
        list.add(new Entry(date,betrag,kategorie));
-       writeCsv();
-       updateSpinner();
-       clear();
+       String[] array123 = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+             String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie();
+             array123[i]=x;
+
+        }
+        ArrayAdapter view = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
+        listView.setAdapter(view);
+        setSpinner2();
+        clear();
     }
 
     public void clear()
     {
-        a.clearAnimation();
-        b.clearAnimation();
-        c.clearAnimation();
+        a.setText("");
+        b.setText("");
+        c.setText("");
     }
 
-    public void updateSpinner()
+    public void setSpinner2()
     {
-
+        String[] array1234=new String[lastChosen.size()];
+        for (int i = 0; i < lastChosen.size(); i++) {
+            array1234[i] = lastChosen.get(i);
+        }
+        ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array1234);
+        listView.setAdapter(ad2);
     }
 
     public void loadApplication()
