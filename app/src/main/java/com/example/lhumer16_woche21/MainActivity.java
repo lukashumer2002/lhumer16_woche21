@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         okay = findViewById(R.id.buttonOk);
         lastChosen = new ArrayList<>();
-        lastChosen.add("Fußball");lastChosen.add("Party");
+        lastChosen.add("Fußball");lastChosen.add("Party");lastChosen.add("");
         listView = findViewById(R.id.ListView);
         a = (EditText) findViewById(R.id.editDate);
         b =(EditText)findViewById(R.id.betrag);
@@ -55,26 +56,34 @@ public class MainActivity extends AppCompatActivity {
         String[] arr = new String[]{"Einnahmen","Ausgaben"};
         ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1,arr);
         s1.setAdapter(ad);
-        arr2 = new String[]{"Party", "Fußball"};
+        arr2 = new String[]{"","Party", "Fußball"};
         ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
         s2.setAdapter(ad2);
     }
 
-    public void ok()
+    public void ok(View view)
     {
-       double betrag = Double.valueOf(b.toString());
+       String betrag = b.getText().toString();
        String date = a.getText().toString();
        String kategorie = c.getText().toString();
+       String kattype= s2.getSelectedItem().toString();
+
+       if (kattype!=""&&kategorie=="")
+       {
+           kattype=kategorie;
+       }
+
+       String type = s1.getSelectedItem().toString();
        lastChosen.add(kategorie);
-       list.add(new Entry(date,betrag,kategorie));
-       String[] array123 = new String[list.size()];
+        list.add(new Entry(date,betrag,kategorie,type));
+        String[] array123 = new String[list.size()];
         for (int i = 0; i < list.size(); i++) {
-             String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie();
+             String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie()+";"+list.get(i).getType();
              array123[i]=x;
 
         }
-        ArrayAdapter view = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
-        listView.setAdapter(view);
+        ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
+        listView.setAdapter(view1);
         setSpinner2();
         clear();
     }
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         a.setText("");
         b.setText("");
         c.setText("");
+        s2.setEmptyView(null);
     }
 
     public void setSpinner2()
@@ -93,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             array1234[i] = lastChosen.get(i);
         }
         ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array1234);
-        listView.setAdapter(ad2);
+        s2.setAdapter(ad2);
     }
 
     public void loadApplication()
