@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         arr2 = new String[]{" "};
         ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
         s2.setAdapter(ad2);
+        setView();
     }
 
     public void ok(View view) {
@@ -101,14 +102,8 @@ public class MainActivity extends AppCompatActivity {
             String irg = "Cash: "+ calc();
             cash.setText(irg);
 
-            String[] array123 = new String[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                String x = list.get(i).getDate().toString() + ";" + list.get(i).getBetrag() + ";" + list.get(i).getKategorie() + ";" + list.get(i).getType();
-                array123[i] = x;
-            }
-            ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
-            listView.setAdapter(view1);
 
+            setView();
 
             try {
                 writeCsv1();
@@ -136,6 +131,17 @@ public class MainActivity extends AppCompatActivity {
         s2.setAdapter(null);
     }
 
+    public void setView()
+    {
+        String[] array123 = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            String x = list.get(i).getDate().toString() + ";" + list.get(i).getBetrag() + ";" + list.get(i).getKategorie() + ";" + list.get(i).getType();
+            array123[i] = x;
+        }
+        ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
+        listView.setAdapter(view1);
+    }
+
     public void setSpinner2()
     {
         String[] array1234=new String[lastChosen.size()];
@@ -148,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadApplication()
     {
-        String filename = "MySecondCsv.csv";
+        String filename = "MyCsv3.csv";
         list.clear();
         try{
             FileInputStream fis = openFileInput(filename);
@@ -170,41 +176,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public List<Entry> writeCsv() {
-//        list = new ArrayList<Entry>();
-//        File file = new File("abc.csv");
-//
-//        try {
-//            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-//
-//            for (int i = 0; i < list.size(); i++) {
-//                String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie();
-//                bw.write(x);
-//            }
-//
-//            } catch (IOException e) {
-//            Log.e(TAG, e.toString());
-//            e.printStackTrace();
-//        }
-//
-//        return list;
-//    }
 
     public void writeCsv1() throws IOException {
-//        String baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-//        String fileName = "Data.csv";
-//        String filePath = baseDir + File.separator + fileName;
-//        File f = new File(filePath);
-//        FileWriter writer = null;
-//// File exist
-//        if (f.exists() && !f.isDirectory()) {
-//            writer = new FileWriter(fileName);
-//            for (int i = 0; i < list.size(); i++) {
-//                writer.write(list.get(i).getStringCSV());
-//            }
-//        } else {
-//            Toast.makeText(this, "Fehler beim schreiben des CSV Files", Toast.LENGTH_SHORT).show();
-//        }
 
     String filename = "MyCsv3.csv";
     try
@@ -213,9 +186,7 @@ public class MainActivity extends AppCompatActivity {
         PrintWriter out = new PrintWriter(new OutputStreamWriter(fos));
 
         out.println(list.get(list.size()-1).getStringCSV());
-//        for (int i = 0; i < list.size(); i++) {
-//            out.println(list.get(i).getStringCSV());
-//        }
+
 
         out.flush();
         out.close();
@@ -230,12 +201,12 @@ public class MainActivity extends AppCompatActivity {
         {
             double cashvalue1 = 0;
             for (int i = 0; i < list.size(); i++) {
-                if(list.get(i).getKategorie().contains("Ein"))
+                if(list.get(i).getType().equals("Einnahmen"))
                 {
                     cashvalue1 +=list.get(i).getBetrag();
                 }
 
-                if(list.get(i).getKategorie().contains("Aus"))
+                if(list.get(i).getType().contains("Ausgaben"))
                 {
                     cashvalue1 -=list.get(i).getBetrag();
                 }
