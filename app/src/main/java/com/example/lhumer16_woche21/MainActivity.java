@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,6 +19,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,30 +66,45 @@ public class MainActivity extends AppCompatActivity {
 
     public void ok(View view)
     {
+
        String betrag = b.getText().toString();
-       String date = a.getText().toString();
-       String kategorie;
-       String kattype= s2.getSelectedItem().toString();
+       String dateString = a.getText().toString();
 
-       if (kattype.length()<2)
-       {
-           c.setText(kattype);
-       }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(dateString);
 
-        kategorie = c.getText().toString();
+            String kategorie;
+            String kattype= s2.getSelectedItem().toString();
 
-        String type = s1.getSelectedItem().toString();
-        lastChosen.add(kategorie);
-        list.add(new Entry(date,betrag,kategorie,type));
-        String[] array123 = new String[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-             String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie()+";"+list.get(i).getType();
-             array123[i]=x;
+            if (kattype.length()>1)
+            {
+                c.setText(kattype);
+            }
+
+            kategorie = c.getText().toString();
+
+            String type = s1.getSelectedItem().toString();
+            lastChosen.add(kategorie);
+            list.add(new Entry(date,betrag,kategorie,type));
+            String[] array123 = new String[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                String x = list.get(i).getDate().toString()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie()+";"+list.get(i).getType();
+                array123[i]=x;
+            }
+            ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
+            listView.setAdapter(view1);
+            clear();
+            setSpinner2();
+
+
+
+        } catch (ParseException e) {
+            Toast.makeText(this, "Datumformat: dd.MM.yyyy", Toast.LENGTH_LONG).show();
+            clear();
+
         }
-        ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
-        listView.setAdapter(view1);
-        clear();
-        setSpinner2();
 
     }
 
