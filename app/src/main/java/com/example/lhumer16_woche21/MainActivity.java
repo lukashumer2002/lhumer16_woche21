@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         okay = findViewById(R.id.buttonOk);
         lastChosen = new ArrayList<>();
-        lastChosen.add("Fußball");lastChosen.add("Party");lastChosen.add("");
+        lastChosen.add("");lastChosen.add("Fußball");lastChosen.add("Party");
         listView = findViewById(R.id.ListView);
         a = (EditText) findViewById(R.id.editDate);
         b =(EditText)findViewById(R.id.betrag);
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String[] arr = new String[]{"Einnahmen","Ausgaben"};
         ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1,arr);
         s1.setAdapter(ad);
-        arr2 = new String[]{"","Party", "Fußball"};
+        arr2 = new String[]{" "};
         ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
         s2.setAdapter(ad2);
     }
@@ -65,27 +65,29 @@ public class MainActivity extends AppCompatActivity {
     {
        String betrag = b.getText().toString();
        String date = a.getText().toString();
-       String kategorie = c.getText().toString();
+       String kategorie;
        String kattype= s2.getSelectedItem().toString();
 
-       if (kattype!=""&&kategorie=="")
+       if (kattype.length()<2)
        {
-           kattype=kategorie;
+           c.setText(kattype);
        }
 
-       String type = s1.getSelectedItem().toString();
-       lastChosen.add(kategorie);
+        kategorie = c.getText().toString();
+
+        String type = s1.getSelectedItem().toString();
+        lastChosen.add(kategorie);
         list.add(new Entry(date,betrag,kategorie,type));
         String[] array123 = new String[list.size()];
         for (int i = 0; i < list.size(); i++) {
              String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie()+";"+list.get(i).getType();
              array123[i]=x;
-
         }
         ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
         listView.setAdapter(view1);
-        setSpinner2();
         clear();
+        setSpinner2();
+
     }
 
     public void clear()
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         a.setText("");
         b.setText("");
         c.setText("");
-        s2.setEmptyView(null);
+        s2.setAdapter(null);
     }
 
     public void setSpinner2()
