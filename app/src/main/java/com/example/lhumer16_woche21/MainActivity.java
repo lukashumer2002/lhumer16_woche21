@@ -10,15 +10,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,11 +47,15 @@ public class MainActivity extends AppCompatActivity {
     String[] arr2;
     ArrayAdapter ad2;
     List<String> lastChosen;
+    TextView cash;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        cash = findViewById(R.id.textViewCash);
+        cash.setText("Cash: 0");
         okay = findViewById(R.id.buttonOk);
         lastChosen = new ArrayList<>();
         lastChosen.add("");lastChosen.add("Fußball");lastChosen.add("Party");
@@ -64,43 +74,53 @@ public class MainActivity extends AppCompatActivity {
         s2.setAdapter(ad2);
     }
 
-    public void ok(View view)
-    {
+    public void ok(View view) {
 
-       String betrag = b.getText().toString();
-       String dateString = a.getText().toString();
+        double betrag = Double.valueOf(b.getText().toString());
+        String dateString = a.getText().toString();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date date = null;
+
         try {
             date = simpleDateFormat.parse(dateString);
 
             String kategorie;
-            String kattype= s2.getSelectedItem().toString();
+            String kattype = s2.getSelectedItem().toString();
 
-            if (kattype.length()>1)
-            {
+
+
+            if (kattype.length() > 1) {
                 c.setText(kattype);
             }
-
             kategorie = c.getText().toString();
 
             String type = s1.getSelectedItem().toString();
             lastChosen.add(kategorie);
-            list.add(new Entry(date,betrag,kategorie,type));
+            list.add(new Entry(dateString, betrag, kategorie, type));
+            String irg = "Cash: "+ calc();
+            cash.setText(irg);
+
             String[] array123 = new String[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                String x = list.get(i).getDate().toString()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie()+";"+list.get(i).getType();
-                array123[i]=x;
+                String x = list.get(i).getDate().toString() + ";" + list.get(i).getBetrag() + ";" + list.get(i).getKategorie() + ";" + list.get(i).getType();
+                array123[i] = x;
             }
             ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
             listView.setAdapter(view1);
+
+
+            try {
+                writeCsv1();
+            } catch (IOException e) {
+                Toast.makeText(this, "writeCSV1 caused an error", Toast.LENGTH_LONG).show();
+            }
             clear();
             setSpinner2();
 
 
-
-        } catch (ParseException e) {
+        } catch (ParseException e)
+        {
             Toast.makeText(this, "Datumformat: dd.MM.yyyy", Toast.LENGTH_LONG).show();
             clear();
 
@@ -128,39 +148,99 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadApplication()
     {
+        String filename = "MySecondCsv.csv";
+        list.clear();
+        try{
+            FileInputStream fis = openFileInput(filename);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
-    }
-
-    public List<Entry> writeCsv() {
-        list = new ArrayList<Entry>();
-        File file = new File("abc.csv");
-
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-
-            for (int i = 0; i < list.size(); i++) {
-                String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie();
-                bw.write(x);
+            while (true)
+            {
+                String line = br.readLine();
+                if(line==null)
+                {
+                    break;
+                }
+                String[] x=line.split(";");
+                list.add(new Entry(x[0],Double.valueOf(x[1]),x[2],x[3]));
             }
-
-            } catch (IOException e) {
-            Log.e(TAG, e.toString());
+        }catch(Exception e)
+        {
             e.printStackTrace();
         }
-
-        return list;
     }
 
-    private InputStream getInputStreamForAsset(String filename) {
+//    public List<Entry> writeCsv() {
+//        list = new ArrayList<Entry>();
+//        File file = new File("abc.csv");
+//
+//        try {
+//            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+//
+//            for (int i = 0; i < list.size(); i++) {
+//                String x = list.get(i).getDate()+";"+list.get(i).getBetrag()+";"+list.get(i).getKategorie();
+//                bw.write(x);
+//            }
+//
+//            } catch (IOException e) {
+//            Log.e(TAG, e.toString());
+//            e.printStackTrace();
+//        }
+//
+//        return list;
+//    }
 
-        Log.d(TAG, "getInputStreamForAsset: " + filename);
-        AssetManager assets = getAssets();
-        try {
-            return assets.open(filename);
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-            e.printStackTrace();
-            return null;
+    public void writeCsv1() throws IOException {
+//        String baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+//        String fileName = "Data.csv";
+//        String filePath = baseDir + File.separator + fileName;
+//        File f = new File(filePath);
+//        FileWriter writer = null;
+//// File exist
+//        if (f.exists() && !f.isDirectory()) {
+//            writer = new FileWriter(fileName);
+//            for (int i = 0; i < list.size(); i++) {
+//                writer.write(list.get(i).getStringCSV());
+//            }
+//        } else {
+//            Toast.makeText(this, "Fehler beim schreiben des CSV Files", Toast.LENGTH_SHORT).show();
+//        }
+
+    String filename = "MyCsv3.csv";
+    try
+    {
+        FileOutputStream fos = openFileOutput(filename, MODE_PRIVATE | MODE_APPEND);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(fos));
+
+        out.println(list.get(list.size()-1).getStringCSV());
+//        for (int i = 0; i < list.size(); i++) {
+//            out.println(list.get(i).getStringCSV());
+//        }
+
+        out.flush();
+        out.close();
+
+
+    }catch (Exception e)
+    {
+        e.printStackTrace();
+    }
+    }
+        public double calc()
+        {
+            double cashvalue1 = 0;
+            for (int i = 0; i < list.size(); i++) {
+                if(list.get(i).getKategorie().contains("Ein"))
+                {
+                    cashvalue1 +=list.get(i).getBetrag();
+                }
+
+                if(list.get(i).getKategorie().contains("Aus"))
+                {
+                    cashvalue1 -=list.get(i).getBetrag();
+                }
+            }
+            return  cashvalue1;
         }
     }
-}
+
