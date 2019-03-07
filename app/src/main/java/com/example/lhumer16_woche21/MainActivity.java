@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         arr2 = new String[]{" "};
         ad2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,arr2);
         s2.setAdapter(ad2);
-        setView();
+        setViewfirst();
+        setSpinner2();
     }
 
     public void ok(View view) {
@@ -99,9 +100,6 @@ public class MainActivity extends AppCompatActivity {
             String type = s1.getSelectedItem().toString();
             lastChosen.add(kategorie);
             list.add(new Entry(dateString, betrag, kategorie, type));
-            String irg = "Cash: "+ calc();
-            cash.setText(irg);
-
 
             setView();
 
@@ -131,6 +129,21 @@ public class MainActivity extends AppCompatActivity {
         s2.setAdapter(null);
     }
 
+    public void setViewfirst()
+    {
+        loadApplication();
+        String[] array123 = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            String x = list.get(i).getDate().toString() + ";" + list.get(i).getBetrag() + ";" + list.get(i).getKategorie() + ";" + list.get(i).getType();
+            array123[i] = x;
+        }
+        ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
+        listView.setAdapter(view1);
+        String irg = "Cash: "+ calc();
+        cash.setText(irg);
+
+    }
+
     public void setView()
     {
         String[] array123 = new String[list.size()];
@@ -140,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         }
         ArrayAdapter view1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array123);
         listView.setAdapter(view1);
+        String irg = "Cash: "+ calc();
+        cash.setText(irg);
     }
 
     public void setSpinner2()
